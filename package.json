@@ -1,0 +1,31 @@
+{
+  "name": "vue-phaser3",
+  "version": "3.2.1",
+  "description": "Template for working with Phaser in a Vue project",
+  "author": "Markus Appel <markospoparkos@gmail.com>",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "start": "http-server dist --port=5000"
+  },
+  "dependencies": {
+    "core-js": "^3.24.1",
+    "phaser": "^3.55.2",
+    "vue": "^3.2.37"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^5.0.8",
+    "@vue/cli-service": "^5.0.8",
+    "http-server": "^14.1.1",
+    "sass": "^1.54.4",
+    "sass-loader": "^13.0.2"
+  },
+  "keywords": [
+    "vue",
+    "phaser",
+    "webpack",
+    "boilerplate",
+    "template"
+  ]
+
+}
