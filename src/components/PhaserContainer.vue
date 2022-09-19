@@ -1,5 +1,7 @@
 <script setup>
 import { onMounted, onUnmounted } from 'vue'
+import socket from "@/main";
+
 
 let gameInstance = null
 const containerId = 'game-container'
@@ -7,6 +9,7 @@ const game = await import(/* webpackChunkName: "game" */ '@/game/game')
 
 onMounted(() => {
   gameInstance = game.launch(containerId)
+
 })
 
 onUnmounted(() => {
