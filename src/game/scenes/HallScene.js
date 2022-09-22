@@ -16,7 +16,10 @@ var newConnectId;
 const playerMap = new Map();
 //是否成功连接服务器并获取到在线玩家信息（备用，后续优化）
 var connectSuccessFlag = false;
-
+//在线人数
+var playerNum;
+//前台
+var bar;
 //连接服务器获取客户端id
 socket.on('getClientId',msg =>{
     console.log("客户端已连接，客户端id：" + msg)
@@ -55,20 +58,34 @@ export default class HallScene extends Scene {
         walls.create(1366/2,0,'xWall');
         walls.create(1366/2,768,'xWall');
 
+        //txt
+        this.add.text(15, 15, '角色控制 : 方向键(仅支持PC)', { fontFamily: 'Arial', fontSize: 18, color: '#F38D72' });
+        this.add.text(15, 45, '当前在线：', { fontFamily: 'Arial', fontSize: 18, color: '#885478' });
+        if (onlinePlayers.length <= 0){
+            this.add.text(100, 42, '  无法连接至服务器,请刷新页面！', { fontFamily: 'Arial', fontSize: 23, color: '#EE76B1' });
+        }else {
+            playerNum = this.add.text(100, 42, onlinePlayers.length, { fontFamily: 'Arial', fontSize: 23, color: '#EE76B1' });
+        }
+        //前台
+        this.physics.add.staticSprite(1366/2, 52,'long').setScale(0.1)
+        bar = this.physics.add.staticSprite(1366/2,95,'bar');
+        this.add.text(1366/2 - 35, 140, '前台', { fontFamily: 'Arial', fontSize: 30, color: '#AFA8BA' });
         //加载自己的精灵
         yourPlayer = this.physics.add.sprite(1366/2,768 - 30,'player').setScale(0.3);
-        yourPlayer.setBounce(0.4);
+        yourPlayer.setBounce(0.2);
         yourPlayer.setCollideWorldBounds(true);
 
-        //渲染在线玩家的实体
-        this.initOnlinePlayer();
         //创建游标
         cursors = this.input.keyboard.createCursorKeys();
 
         //自己与墙体的物理碰撞
         this.physics.add.collider(yourPlayer,walls);
+        //与吧台的碰撞
+        // this.physics.add.collider(yourPlayer,bar);
 
-
+        this.physics.add.overlap(yourPlayer,bar,this.collectBar,null,this);
+        //渲染在线玩家的精灵
+        this.initOnlinePlayer();
     }
 
     update (){
@@ -101,7 +118,9 @@ export default class HallScene extends Scene {
         //监听其他玩家移动的消息
         this.someoneMoved();
         //监听其他玩家离开的消息
-        this.someoneLeveled()
+        this.someoneLeveled();
+        //获取实时在线列表
+        this.getOnlinePlayersByRealTime();
 
     }
 
@@ -174,6 +193,20 @@ export default class HallScene extends Scene {
                     console.log("已初始化玩家：" + clientId)
                 }
             }
+    }
+
+    //实时获取在线用户列表
+    getOnlinePlayersByRealTime(){
+        socket.on('onlinePlayers',playerList =>{
+            onlinePlayers = playerList;
+            //更新在线人数
+            playerNum.setText(onlinePlayers.length);
+        })
+    }
+
+    //碰到前台
+    collectBar(){
+        yourPlayer.setPosition(1366/2, 230)
     }
 
 
