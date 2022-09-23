@@ -16,6 +16,15 @@ function launch(containerId) {
         debug: false
       }
     },
+    render: {
+      powerPreference: 'high-performance'
+    },
+    fps: {
+      min: 60,
+      target: 240,
+      forceSetTimeOut: false,
+      deltaHistory: 10
+    },
     scene: [BootScene, PlayScene,HallScene]
   })
 }

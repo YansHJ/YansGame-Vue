@@ -20,6 +20,10 @@ var connectSuccessFlag = false;
 var playerNum;
 //前台
 var bar;
+//公告
+var notice;
+//公告
+var noticeLength = 0;
 //连接服务器获取客户端id
 socket.on('getClientId',msg =>{
     console.log("客户端已连接，客户端id：" + msg)
@@ -66,14 +70,30 @@ export default class HallScene extends Scene {
         }else {
             playerNum = this.add.text(100, 42, onlinePlayers.length, { fontFamily: 'Arial', fontSize: 23, color: '#EE76B1' });
         }
+        //公告
+        notice = this.add.text(15,600,'',{ fontFamily: 'Arial', fontSize: 15, color: '#AFA8BA' });
         //前台
         this.physics.add.staticSprite(1366/2, 52,'long').setScale(0.1)
         bar = this.physics.add.staticSprite(1366/2,95,'bar');
         this.add.text(1366/2 - 35, 140, '前台', { fontFamily: 'Arial', fontSize: 30, color: '#AFA8BA' });
         //加载自己的精灵
-        yourPlayer = this.physics.add.sprite(1366/2,768 - 30,'player').setScale(0.3);
+        yourPlayer = this.physics.add.sprite(1366/2,768/2,'player').setScale(0.5);
         yourPlayer.setBounce(0.2);
         yourPlayer.setCollideWorldBounds(true);
+        //动画
+        this.anims.create({
+            key: 'right',
+            frames: this.anims.generateFrameNumbers('player',{ start: 6,end: 9 }),
+            frameRate: 10,
+            repeat: 0
+        })
+        this.anims.create({
+            key: 'left',
+            frames: [{key: 'player', frame: 4}],
+            frameRate: 20
+        })
+
+
 
         //创建游标
         cursors = this.input.keyboard.createCursorKeys();
@@ -86,6 +106,12 @@ export default class HallScene extends Scene {
         this.physics.add.overlap(yourPlayer,bar,this.collectBar,null,this);
         //渲染在线玩家的精灵
         this.initOnlinePlayer();
+        //新加入的玩家渲染
+        this.newConnect()
+        //监听其他玩家离开的消息
+        this.someoneLeveled();
+        //获取实时在线列表
+        this.getOnlinePlayersByRealTime();
     }
 
     update (){
@@ -94,35 +120,28 @@ export default class HallScene extends Scene {
         if (cursors.left.isDown){
             // yourPlayer.setVelocityX(-150)
             yourPlayer.setX(yourPlayer.x - 5)
+            yourPlayer.anims.play('left',true);
             this.iMoved()
-        }
-        if (cursors.right.isDown){
+        }else if (cursors.right.isDown){
             // yourPlayer.setVelocityX(150)
             yourPlayer.setX(yourPlayer.x + 5)
+            yourPlayer.anims.play('right',true);
             this.iMoved()
-        }
-        if (cursors.up.isDown){
+        }else if (cursors.up.isDown){
             // yourPlayer.setVelocityY(-150)
             yourPlayer.setY(yourPlayer.y - 5)
+            yourPlayer.anims.play('right',true);
             this.iMoved()
-        }
-        if (cursors.down.isDown){
+        }else if (cursors.down.isDown){
             // yourPlayer.setVelocityY(150)
+            yourPlayer.anims.play('right',true);
             yourPlayer.setY(yourPlayer.y + 5)
             this.iMoved()
         }
-
-
-        //新加入的玩家渲染
-        this.newConnect()
         //监听其他玩家移动的消息
         this.someoneMoved();
-        //监听其他玩家离开的消息
-        this.someoneLeveled();
-        //获取实时在线列表
-        this.getOnlinePlayersByRealTime();
-
     }
+
 
     //向服务器告知自己移动了
     iMoved(){
@@ -143,6 +162,7 @@ export default class HallScene extends Scene {
                 var movedPlayer = playerMap.get(player.clientId);
                 movedPlayer.setX(player.xx)
                 movedPlayer.setY(player.yy)
+                movedPlayer.anims.play('right',true)
             }
         })
     }
@@ -151,6 +171,7 @@ export default class HallScene extends Scene {
     someoneLeveled(){
         socket.on('someoneLeveled',clientId =>{
             console.log('客户端：' + clientId + ' 离开了房间')
+            this.updateNotice('有人离开了房间')
             var player = playerMap.get(clientId);
             player.destroy()
             playerMap.delete(clientId)
@@ -165,9 +186,10 @@ export default class HallScene extends Scene {
             //过滤，避免重复渲染自己
             if (sessionStorage.getItem('clientId') !== id){
                 if (newConnectId !== id){
-                    var player = this.physics.add.sprite(1366/2,768 - 30,'player').setScale(0.3);
+                    var player = this.physics.add.sprite(1366/2,768 - 30,'player').setScale(0.5);
                     playerMap.set(id,player);
-                    console.log("有人进入房间：" + id)
+                    console.log("有人进入房间：" + id);
+                    this.updateNotice('有人进入房间')
                     // player.setBounce(0.4);
                     // player.setCollideWorldBounds(true);
                     this.physics.add.collider(yourPlayer,player);
@@ -185,7 +207,7 @@ export default class HallScene extends Scene {
                 var clientId = onlinePlayer.clientId;
                 //过滤，避免重复渲染自己
                 if (sessionStorage.getItem('clientId') !== clientId){
-                    var player = this.physics.add.sprite(onlinePlayer.xx,onlinePlayer.yy,'player').setScale(0.3);
+                    var player = this.physics.add.sprite(onlinePlayer.xx,onlinePlayer.yy,'player').setScale(0.5);
                     playerMap.set(clientId,player);
                     // player.setBounce(0.4);
                     // player.setCollideWorldBounds(true);
@@ -206,8 +228,16 @@ export default class HallScene extends Scene {
 
     //碰到前台
     collectBar(){
-        yourPlayer.setPosition(1366/2, 230)
+        yourPlayer.setPosition(1366/2, 250)
     }
 
+    //更新公告
+    updateNotice(newNotice){
+        if (noticeLength > 7){
+            notice.setText('');
+        }
+        notice.setText(notice.text + '\n' + new Date().getHours() + ':' + new Date().getMinutes() + '  ' + newNotice);
+        noticeLength ++;
+    }
 
 }
