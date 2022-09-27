@@ -14,8 +14,6 @@ var onlinePlayers = [];
 var newConnectId;
 //在线玩家精灵存储
 const playerMap = new Map();
-//是否成功连接服务器并获取到在线玩家信息（备用，后续优化）
-var connectSuccessFlag = false;
 //在线人数
 var playerNum;
 //前台
@@ -24,6 +22,7 @@ var bar;
 var notice;
 //公告
 var noticeLength = 0;
+
 //连接服务器获取客户端id
 socket.on('getClientId',msg =>{
     console.log("客户端已连接，客户端id：" + msg)
@@ -39,8 +38,9 @@ socket.on('getClientId',msg =>{
  */
 socket.on('initOnlinePlayers',playerList =>{
     onlinePlayers = playerList;
-    console.log(playerList)
-    connectSuccessFlag = true;
+    if (onlinePlayers.length < 1){
+        console.log(playerList)
+    }
 })
 
 
