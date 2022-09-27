@@ -11,6 +11,7 @@
   "dependencies": {
     "core-js": "^3.24.1",
     "phaser": "^3.55.2",
+    "phaser3-rex-plugins": "^1.1.73",
     "socket.io-client": "1.7.4",
     "vue": "^3.2.37"
   },

@@ -6,6 +6,7 @@ import yWall from '@/game/assets/font/Hall/build/ywall.png'
 import HallBackGround from '@/game/assets/font/Hall/build/initBackGround.png'
 import bar from '@/game/assets/font/Hall/build/bar.png'
 import longYuTao from '@/game/assets/font/Hall/build/longyutao.jpg'
+import quan from '@/game/assets/font/Rooms/build/quan.png'
 
 export default class BootScene extends Scene {
   constructor () {
@@ -21,9 +22,11 @@ export default class BootScene extends Scene {
     this.load.image('HallBack',HallBackGround)
     this.load.image('bar',bar)
     this.load.image('long',longYuTao)
+    this.load.image('quan',quan)
   }
 
   create () {
-    this.scene.start('HallScene')
+    this.scene.start('Rooms')
+    // this.scene.start('PlayScene')
   }
 }

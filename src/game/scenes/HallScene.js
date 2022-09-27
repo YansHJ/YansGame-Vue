@@ -229,6 +229,7 @@ export default class HallScene extends Scene {
     //碰到前台
     collectBar(){
         yourPlayer.setPosition(1366/2, 250)
+        this.scene.start('Rooms')
     }
 
     //更新公告
