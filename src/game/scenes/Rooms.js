@@ -3,8 +3,10 @@ import {Scene} from "phaser";
 
 //周围的墙，静态实体组
 var walls;
-//圈，静态实体组
-var quans;
+//回大厅
+var hall;
+//球场
+var footballField;
 //你自己的精灵
 var yourPlayer;
 //游标
@@ -26,40 +28,39 @@ export default class HallScene extends Scene {
         walls.create(1366/2,768,'xWall');
 
         this.add.text(1366/2 - 70, 40, '选 择 房 间', { fontFamily: 'Arial', fontSize: 32, color: '#F25F5C' });
+        // this.add.ellipse(1366/2-70,100,30,30,0xff0000);
 
-        quans = this.physics.add.staticGroup();
-        quans.create(200,768/2 - 40,'quan').setScale(0.4);
+        //返回大厅
+        hall = this.physics.add.sprite(1366 - 90,768 - 90,'backQuan').setScale(2);
+        this.add.text(1366 - 90 -35, 768 - 100, '返回大厅', { fontFamily: 'Arial', fontSize: 18, color: '#F38D72' });
+        this.backQuan()
+        hall.anims.play('backQuan',true)
+        //球场
+        footballField = this.physics.add.staticSprite(200,768/2 - 40,'quan').setScale(0.4);
         this.add.text(170, 768/2 - 75, ' 球 场', { fontFamily: 'Arial', fontSize: 18, color: '#F38D72' });
         this.add.text(130, 768/2 - 35, ' 当前在线:没做呢', { fontFamily: 'Arial', fontSize: 18, color: '#F38D72' });
 
-        quans.create(522,768/2 - 40,'quan').setScale(0.4);
-        this.add.text(492, 768/2 - 75, '未开放', { fontFamily: 'Arial', fontSize: 18, color: '#F38D72' });
 
-        quans.create(842,768/2 - 40,'quan').setScale(0.4);
-        this.add.text(812, 768/2 - 75, '未开放', { fontFamily: 'Arial', fontSize: 18, color: '#F38D72' });
-
-        quans.create(1160,768/2 - 40,'quan').setScale(0.4);
-        this.add.text(1130, 768/2 - 75, '未开放', { fontFamily: 'Arial', fontSize: 18, color: '#F38D72' });
+        // quans.create(522,768/2 - 40,'quan').setScale(0.4);
+        // this.add.text(492, 768/2 - 75, '未开放', { fontFamily: 'Arial', fontSize: 18, color: '#F38D72' });
+        //
+        // quans.create(842,768/2 - 40,'quan').setScale(0.4);
+        // this.add.text(812, 768/2 - 75, '未开放', { fontFamily: 'Arial', fontSize: 18, color: '#F38D72' });
+        //
+        // quans.create(1160,768/2 - 40,'quan').setScale(0.4);
+        // this.add.text(1130, 768/2 - 75, '未开放', { fontFamily: 'Arial', fontSize: 18, color: '#F38D72' });
 
         //加载自己的精灵
-        yourPlayer = this.physics.add.sprite(1366/2,768 - 32,'player').setScale(0.5);
+        yourPlayer = this.physics.add.sprite(1366/2,768 - 30,'player');
         yourPlayer.setBounce(0.2);
         yourPlayer.setCollideWorldBounds(true);
 
-
-
-        //动画
-        this.anims.create({
-            key: 'right',
-            frames: this.anims.generateFrameNumbers('player',{ start: 6,end: 9 }),
-            frameRate: 10,
-            repeat: 0
-        })
-        this.anims.create({
-            key: 'left',
-            frames: [{key: 'player', frame: 4}],
-            frameRate: 20
-        })
+        //返回大厅事件
+        this.physics.add.overlap(yourPlayer,hall,this.backToHall,null,this);
+        //球场事件
+        this.physics.add.overlap(yourPlayer,footballField,this.transferCourt(),null,this);
+        //移动动画
+        this.moveAnims()
 
         //创建游标
         cursors = this.input.keyboard.createCursorKeys();
@@ -78,11 +79,57 @@ export default class HallScene extends Scene {
         }else if (cursors.up.isDown){
             // yourPlayer.setVelocityY(-150)
             yourPlayer.setY(yourPlayer.y - 5)
-            yourPlayer.anims.play('right',true);
+            yourPlayer.anims.play('up',true);
         }else if (cursors.down.isDown){
             // yourPlayer.setVelocityY(150)
-            yourPlayer.anims.play('right',true);
+            yourPlayer.anims.play('down',true);
             yourPlayer.setY(yourPlayer.y + 5)
         }
+    }
+    //移动动画
+    moveAnims(){
+        this.anims.create({
+            key: 'down',
+            frames: this.anims.generateFrameNumbers('player',{start: 0,end: 3}),
+            frameRate: 10,
+            repeat: -1
+        })
+        this.anims.create({
+            key: 'left',
+            frames: this.anims.generateFrameNumbers('player',{start: 4,end: 7}),
+            frameRate: 10,
+            repeat: -1
+        })
+        this.anims.create({
+            key: 'up',
+            frames: this.anims.generateFrameNumbers('player',{start: 8,end: 11}),
+            frameRate: 10,
+            repeat: -1
+        })
+        this.anims.create({
+            key: 'right',
+            frames: this.anims.generateFrameNumbers('player',{start: 12,end: 15}),
+            frameRate: 10,
+            repeat: -1
+        })
+    }
+    //返回大厅动画
+    backQuan(){
+        this.anims.create({
+            key: 'backQuan',
+            frames: this.anims.generateFrameNumbers('backQuan',{start: 0,end: 11}),
+            frameRate: 5,
+            repeat: -1
+        })
+    }
+
+    //返回大厅
+    backToHall(){
+        this.scene.sleep('Rooms')
+        this.scene.start('HallScene')
+    }
+    //传送球场
+    transferCourt(){
+
     }
 }
