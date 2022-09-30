@@ -1,4 +1,5 @@
 import {Scene} from "phaser";
+import socket from "@/main";
 
 
 //周围的墙，静态实体组
@@ -36,9 +37,11 @@ export default class HallScene extends Scene {
         this.backQuan()
         hall.anims.play('backQuan',true)
         //球场
-        footballField = this.physics.add.staticSprite(200,768/2 - 40,'quan').setScale(0.4);
-        this.add.text(170, 768/2 - 75, ' 球 场', { fontFamily: 'Arial', fontSize: 18, color: '#F38D72' });
-        this.add.text(130, 768/2 - 35, ' 当前在线:没做呢', { fontFamily: 'Arial', fontSize: 18, color: '#F38D72' });
+        footballField = this.physics.add.sprite(200,768/2 - 40,'blueCrystal').setScale(2);
+        this.add.text(170, 768/2-130, ' 球 场', { fontFamily: 'Arial', fontSize: 18, color: '#F38D72' });
+        this.add.text(130, 768/2-110, ' 当前在线:没做呢', { fontFamily: 'Arial', fontSize: 18, color: '#F38D72' });
+        this.blueCrystal();
+        footballField.anims.play('blueCrystal',true)
 
 
         // quans.create(522,768/2 - 40,'quan').setScale(0.4);
@@ -118,7 +121,16 @@ export default class HallScene extends Scene {
         this.anims.create({
             key: 'backQuan',
             frames: this.anims.generateFrameNumbers('backQuan',{start: 0,end: 11}),
-            frameRate: 5,
+            frameRate: 15,
+            repeat: -1
+        })
+    }
+    //蓝色水晶动画
+    blueCrystal(){
+        this.anims.create({
+            key: 'blueCrystal',
+            frames: this.anims.generateFrameNumbers('blueCrystal',{start: 0,end: 7}),
+            frameRate: 4,
             repeat: -1
         })
     }
@@ -130,6 +142,12 @@ export default class HallScene extends Scene {
     }
     //传送球场
     transferCourt(){
-
+        socket.emit('someoneLevelRoom',{
+            clientId: sessionStorage.getItem('clientId'),
+            xx:yourPlayer.x,
+            yy:yourPlayer.y,
+            nowScene:1,
+            nextScene:2,
+        })
     }
 }

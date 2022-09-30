@@ -8,6 +8,7 @@ import bar from '@/game/assets/font/Hall/build/bar.png'
 import longYuTao from '@/game/assets/font/Hall/build/longyutao.jpg'
 import quan from '@/game/assets/font/Rooms/build/quan.png'
 import backQuan from '@/game/assets/font/Rooms/build/backQuan.png'
+import blueCrystal from '@/game/assets/font/Rooms/build/blueCrystal.png'
 
 
 
@@ -28,10 +29,11 @@ export default class BootScene extends Scene {
     this.load.image('long',longYuTao)
     this.load.image('quan',quan)
     this.load.spritesheet('backQuan',backQuan,{ frameWidth: 32,frameHeight: 32})
+    this.load.spritesheet('blueCrystal',blueCrystal,{ frameWidth: 32,frameHeight: 64})
   }
 
   create () {
-    this.scene.start('HallScene')
+    this.scene.start('Rooms')
     // this.scene.start('PlayScene')
   }
 }

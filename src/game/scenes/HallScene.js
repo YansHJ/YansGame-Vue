@@ -20,7 +20,7 @@ var playerNum;
 var bar;
 //公告
 var notice;
-//公告
+//公告条数
 var noticeLength = 0;
 
 //连接服务器获取客户端id
@@ -31,7 +31,7 @@ socket.on('getClientId',msg =>{
 
 socket.emit('joinScene',{
     clientId: sessionStorage.getItem('clientId'),
-    scene:1,
+    nowScene:1,
 })
 
 /**
@@ -83,9 +83,11 @@ export default class HallScene extends Scene {
         this.add.text(1366/2 - 35, 140, '前台', { fontFamily: 'Arial', fontSize: 30, color: '#AFA8BA' });
         //加载自己的精灵
         yourPlayer = this.physics.add.sprite(1366/2,768 - 30,'player');
+        //弹力
         yourPlayer.setBounce(0.2);
+        //世界边界
         yourPlayer.setCollideWorldBounds(true);
-        //动画
+        //移动动画
         this.moveAnims()
         //创建游标
         cursors = this.input.keyboard.createCursorKeys();
@@ -93,7 +95,6 @@ export default class HallScene extends Scene {
         this.physics.add.collider(yourPlayer,walls);
         //与吧台的碰撞
         // this.physics.add.collider(yourPlayer,bar);
-
         this.physics.add.overlap(yourPlayer,bar,this.collectBar,null,this);
 
         setTimeout(()=>{
@@ -143,7 +144,7 @@ export default class HallScene extends Scene {
             clientId: sessionStorage.getItem('clientId'),
             xx:yourPlayer.x,
             yy:yourPlayer.y,
-            scene:1,
+            nowScene:1,
         })
     }
 
@@ -217,6 +218,14 @@ export default class HallScene extends Scene {
             onlinePlayers = playerList;
             //更新在线人数
             playerNum.setText(onlinePlayers.length);
+        })
+    }
+    someoneLevelRoom(){
+        socket.on('someoneLevelRoom_HALL',id =>{
+            this.updateNotice('有人前往了 其他房间')
+            var player = playerMap.get(id);
+            player.destroy();
+            playerMap.delete(id)
         })
     }
 
