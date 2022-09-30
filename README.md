@@ -1,11 +1,11 @@
 # YansGame-Vue
 
-#### 一个使用整合socket.io + vue + phaser3 的尝试性游戏项目
+#### 一个整合socket.io + vue + phaser3 的尝试性多人在线游戏项目
 
 ## 如何启动
 
 ``` bash
-# 修改main.js中的服务器地址(见另一项目 Yans-server)
+# 修改main.js中的服务器地址(见另一项目 Yans-server:  https://github.com/YansHJ/Yans-Server)
 const socket = io('http://localhost:8080')
 
 # 安装依赖
