@@ -1,4 +1,4 @@
-# YansGame-Vue
+# YansGame-Vue (已关闭，转用Unity开发)
 
 #### 一个整合socket.io + vue + phaser3 的尝试性多人在线游戏项目
 
